@@ -1,6 +1,9 @@
+server:
+  port: 8080
+
 spring:
   application:
-    name: accounts
+    name: "accounts"
 
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/easy_microservice_accounts
@@ -12,18 +15,21 @@ spring:
     hibernate:
       ddl-auto: update
   profiles:
-    active: default
-server:
-  port: 8080
+    active: "default"
+  config:
+    import: "optional:configserver:http://localhost:8071/"
 
-#// custom properties
-build:
-  version: "3.0"
-accounts:
-  message: "Welcome to EazyBank accounts related local APIs "
-  contactDetails:
-    name: "John Doe - Developer"
-    email: "john@eazybank.com"
-  onCallSupport:
-    - (555) 555-1234
-    - (555) 523-1345
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+

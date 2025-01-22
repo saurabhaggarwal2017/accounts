@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RequestMapping(value = "/api/v1/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
 @RestController
+@RefreshScope
 public class AccountController {
 
     private final IAccountService accountService;
@@ -35,7 +37,7 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @Value("${build.version}")
+//    @Value("${build.version}")
     private String version;
 
     @Autowired
@@ -190,7 +192,7 @@ public class AccountController {
 
     @GetMapping("/build-info")
     public ResponseEntity<String> getBuildInfo() {
-        return ResponseEntity.status(HttpStatus.OK).body(version);
+        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("build.version"));
     }
 
     @GetMapping("/java-version")
@@ -202,5 +204,6 @@ public class AccountController {
     public ResponseEntity<AccountsContactInfoDto> getContactInfo() {
         return ResponseEntity.status(HttpStatus.OK).body(accountsContactInfoDto);
     }
+
 }
 

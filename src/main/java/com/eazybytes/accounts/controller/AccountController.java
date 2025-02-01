@@ -32,12 +32,7 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     private final IAccountService accountService;
-
-    public AccountController(IAccountService accountService) {
-        this.accountService = accountService;
-    }
-
-//    @Value("${build.version}")
+    @Value("${build.version}")
     private String version;
 
     @Autowired
@@ -45,6 +40,9 @@ public class AccountController {
     @Autowired
     private AccountsContactInfoDto accountsContactInfoDto;
 
+    public AccountController(IAccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Operation(
             method = "POST",
@@ -192,7 +190,7 @@ public class AccountController {
 
     @GetMapping("/build-info")
     public ResponseEntity<String> getBuildInfo() {
-        return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("build.version"));
+        return ResponseEntity.status(HttpStatus.OK).body(version);
     }
 
     @GetMapping("/java-version")

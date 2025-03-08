@@ -19,13 +19,15 @@ public class CustomerController {
 
     private final ICustomerService customerService;
     private final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
     @GetMapping
     public ResponseEntity<CustomerDetailsDto> fetchCustomerDetails(
             @RequestHeader("eazybank-correlation-id") String correlationId,
-            @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-            @RequestParam("mobileNumber") String mobileNumber){
+            @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+            @RequestParam("mobileNumber") String mobileNumber) {
+
         logger.debug("eazyBank-correlation-id found: {} ", correlationId);
-        CustomerDetailsDto customerDetailsDto = customerService.fetchCustomerDetails(mobileNumber,correlationId);
+        CustomerDetailsDto customerDetailsDto = customerService.fetchCustomerDetails(mobileNumber, correlationId);
         return ResponseEntity.status(HttpStatus.OK).body(customerDetailsDto);
     }
 }

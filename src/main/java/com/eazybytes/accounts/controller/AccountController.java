@@ -2,6 +2,8 @@ package com.eazybytes.accounts.controller;
 
 import com.eazybytes.accounts.dto.*;
 import com.eazybytes.accounts.service.IAccountService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -39,6 +43,7 @@ public class AccountController {
     private Environment environment;
     @Autowired
     private AccountsContactInfoDto accountsContactInfoDto;
+    private Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     public AccountController(IAccountService accountService) {
         this.accountService = accountService;
@@ -193,15 +198,27 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK).body(version);
     }
 
+    @RateLimiter(name = "javaVersionRateLimiter", fallbackMethod = "getJavaVersionFallback")
     @GetMapping("/java-version")
     public ResponseEntity<String> getJavaVersion() {
         return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("java.home"));
     }
 
+    public ResponseEntity<String> getJavaVersionFallback(Throwable throwable) {
+        return ResponseEntity.status(HttpStatus.OK).body("java 18");
+    }
+
+    @Retry(name = "contactInfoRetry", fallbackMethod = "getBuildInfoFallback")
     @GetMapping("/contact-info")
     public ResponseEntity<AccountsContactInfoDto> getContactInfo() {
         return ResponseEntity.status(HttpStatus.OK).body(accountsContactInfoDto);
     }
+
+    public ResponseEntity<String> getBuildInfoFallback(Throwable throwable) {
+        logger.info("getBuildInfoFallback invoked!!");
+        return ResponseEntity.status(HttpStatus.OK).body("0.99");
+    }
+
 
 }
 

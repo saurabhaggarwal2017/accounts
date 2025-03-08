@@ -12,6 +12,7 @@ import com.eazybytes.accounts.service.ICustomerService;
 import com.eazybytes.accounts.service.client.CardFeignClient;
 import com.eazybytes.accounts.service.client.LoanFeignClient;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,11 +35,14 @@ public class CustomerServiceImpl implements ICustomerService {
         CustomerDetailsDto customerDetailsDto = CustomerMapper.mapToCustomerDetailsDto(customer, new CustomerDetailsDto());
         AccountDto accountDto = AccountMapper.mapToAccountDto(account, new AccountDto());
         customerDetailsDto.setAccount(accountDto);
-        List<CardDto> cards = cardFeignClient.getAllCardsDetails(correlationId,mobileNumber).getBody();
-        List<LoanResponseDto> loans = loanFeignClient.getAllLoanDetails(correlationId,mobileNumber).getBody();
-        customerDetailsDto.setLoanResponse(loans);
-        customerDetailsDto.setCards(cards);
-
+        ResponseEntity<List<CardDto>> cards = cardFeignClient.getAllCardsDetails(correlationId, mobileNumber);
+        ResponseEntity<List<LoanResponseDto>> loans = loanFeignClient.getAllLoanDetails(correlationId, mobileNumber);
+        if (cards != null) {
+            customerDetailsDto.setCards(cards.getBody());
+        }
+        if (loans != null) {
+            customerDetailsDto.setLoanResponse(loans.getBody());
+        }
         return customerDetailsDto;
 
     }

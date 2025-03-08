@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "loans", path = "/api/v1/loans")
+@FeignClient(name = "loans", path = "/api/v1/loans", fallback = LoansFallback.class)
 public interface LoanFeignClient {
     @GetMapping("/all")
     public ResponseEntity<List<LoanResponseDto>> getAllLoanDetails(

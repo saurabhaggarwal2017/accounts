@@ -29,6 +29,10 @@ spring:
       retry:
         enabled: true
 
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
 #  rabbitmq:
 #    host: "localhost"
 #    port: 5672
@@ -66,4 +70,38 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: "http://localhost:8070/eureka/"
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 2
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+  retry:
+    configs:
+      default:
+        max-attempts: 4
+        wait-duration: 500
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+  #        ignore-exceptions:
+  #          - java.lang.NullPointerException
+  ratelimiter:
+    configs:
+      default:
+        timeout-duration: 1000
+        limit-refresh-period: 1000
+        limit-for-period: 1
+
+
+#  timelimiter:
+#    instances:
+#      default:
+#        timeout-duration: 1ms
+
+
+
+
 
